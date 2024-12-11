@@ -8,32 +8,42 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['icon.svg'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        skipWaiting: true,
+        clientsClaim: true,
+        globIgnores: ['**/*.wasm'],
+        runtimeCaching: [{
+          urlPattern: /\.wasm$/,
+          handler: 'StaleWhileRevalidate',
+          options: {
+            cacheName: 'wasm-cache',
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+            }
+          }
+        }]
+      },
       manifest: {
         name: 'Cool Background Remover',
         short_name: 'BG Remover',
         description: 'Remove image backgrounds easily',
-        theme_color: '#4F46E5',
-        background_color: '#ffffff',
-        display: 'standalone',
+        theme_color: '#1E40AF',
         icons: [
           {
             src: 'icon.svg',
             sizes: '512x512',
             type: 'image/svg+xml',
             purpose: 'any maskable'
-          },
-          {
-            src: 'icon-192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'icon-512.png',
-            sizes: '512x512',
-            type: 'image/png'
           }
         ]
       }
     })
   ],
+  build: {
+    chunkSizeWarningLimit: 30000,
+    rollupOptions: {}
+  }
 })
